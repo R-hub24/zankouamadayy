@@ -242,26 +242,6 @@
             box-shadow: 0 0 0 3px rgba(64, 145, 108, 0.15);
         }
 
-        .file-upload-box {
-            border: 2px dashed var(--border-color);
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            background: #fafafa;
-            cursor: pointer;
-        }
-
-        .file-upload-box input {
-            display: none;
-        }
-
-        .file-name-display {
-            font-size: 0.85rem;
-            color: var(--secondary-green);
-            margin-top: 5px;
-            font-weight: bold;
-        }
-
         .team-box-container {
             background: var(--light-green);
             padding: 1.5rem;
@@ -437,25 +417,6 @@
 
         .id-body p strong {
             color: var(--secondary-green);
-        }
-
-        .card-img-preview {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .card-img-preview div {
-            flex: 1;
-            text-align: center;
-        }
-
-        .card-img-preview img {
-            width: 100%;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 6px;
-            border: 1px solid var(--border-color);
         }
 
         .delete-btn {
@@ -688,24 +649,6 @@
                         <textarea name="prevWork" rows="3" required placeholder="باس لە کارە پێشووەکانت بکە..."></textarea>
                     </div>
 
-                    <div class="form-group">
-                        <label>وێنەی پێشەوەی کارتی دەنگدان (هەموو قەبارە و سایزێک قبولە):</label>
-                        <div class="file-upload-box" onclick="this.querySelector('input').click()">
-                            <i class="fa-solid fa-id-card"></i> وێنەی پێشەوە هەڵبژێرە
-                            <input type="file" id="uniFrontCard" accept="image/*" required onchange="previewFileName(this, 'uniFrontName')">
-                        </div>
-                        <div id="uniFrontName" class="file-name-display"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>وێنەی دواوەی کارتی دەنگدان (هەموو قەبارە و سایزێک قبولە):</label>
-                        <div class="file-upload-box" onclick="this.querySelector('input').click()">
-                            <i class="fa-solid fa-id-card"></i> وێنەی دواوە هەڵبژێرە
-                            <input type="file" id="uniBackCard" accept="image/*" required onchange="previewFileName(this, 'uniBackName')">
-                        </div>
-                        <div id="uniBackName" class="file-name-display"></div>
-                    </div>
-
                     <button type="submit" class="submit-btn" id="uniSubmitBtn"><i class="fa-solid fa-paper-plane"></i> داخل کردن و سەیڤکردن</button>
 
                     <div style="margin-top: 1.5rem; text-align: center;">
@@ -797,24 +740,6 @@
                     <div class="form-group">
                         <label>کاری رێکخراوەیی پێشتر:</label>
                         <textarea name="prevWork" rows="3" required placeholder="باس لە کارە پێشووەکانت بکە..."></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>وێنەی پێشەوەی کارتی دەنگدان (هەموو قەبارە و سایزێک قبولە):</label>
-                        <div class="file-upload-box" onclick="this.querySelector('input').click()">
-                            <i class="fa-solid fa-id-card"></i> وێنەی پێشەوە هەڵبژێرە
-                            <input type="file" id="schoolFrontCard" accept="image/*" required onchange="previewFileName(this, 'schoolFrontName')">
-                        </div>
-                        <div id="schoolFrontName" class="file-name-display"></div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>وێنەی دواوەی کارتی دەنگدان (هەموو قەبارە و سایزێک قبولە):</label>
-                        <div class="file-upload-box" onclick="this.querySelector('input').click()">
-                            <i class="fa-solid fa-id-card"></i> وێنەی دواوە هەڵبژێرە
-                            <input type="file" id="schoolBackCard" accept="image/*" required onchange="previewFileName(this, 'schoolBackName')">
-                        </div>
-                        <div id="schoolBackName" class="file-name-display"></div>
                     </div>
 
                     <button type="submit" class="submit-btn" id="schoolSubmitBtn"><i class="fa-solid fa-paper-plane"></i> داخل کردن و سەیڤکردن</button>
@@ -991,22 +916,6 @@
             }
         }
 
-        function previewFileName(input, displayId) {
-            const displayEl = document.getElementById(displayId);
-            if (input.files && input.files[0]) {
-                displayEl.innerText = "✓ " + input.files[0].name;
-            }
-        }
-
-        function getBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-            });
-        }
-
         async function sendDataToGoogleSheet(dataObj) {
             try {
                 await fetch(SCRIPT_URL, {
@@ -1029,18 +938,6 @@
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> خەریکی ناردن و سەیڤکردنە...`;
 
             const formData = new FormData(form);
-            
-            let frontFile, backFile;
-            if (sectorName === 'هۆبەی زانکۆ و پەیمانگاکان') {
-                frontFile = document.getElementById('uniFrontCard').files[0];
-                backFile = document.getElementById('uniBackCard').files[0];
-            } else {
-                frontFile = document.getElementById('schoolFrontCard').files[0];
-                backFile = document.getElementById('schoolBackCard').files[0];
-            }
-
-            const frontBase64 = frontFile ? await getBase64(frontFile) : '';
-            const backBase64 = backFile ? await getBase64(backFile) : '';
 
             // Data sent to Google Sheet (includes registeredBy)
             const submissionData = {
@@ -1058,12 +955,10 @@
                 repDepartment: formData.get('repDepartment') || 'نییە',
                 city: formData.get('city'),
                 prevWork: formData.get('prevWork'),
-                frontCardImg: frontBase64,
-                backCardImg: backBase64,
                 date: new Date().toLocaleString('ar-IQ')
             };
 
-            // Data saved locally as digital ID card (without registeredBy inside the ID card display)
+            // Data saved locally as digital ID card (without registeredBy)
             const localData = {
                 sector: sectorName,
                 fullName: formData.get('fullName'),
@@ -1078,8 +973,6 @@
                 repDepartment: formData.get('repDepartment') || 'نییە',
                 city: formData.get('city'),
                 prevWork: formData.get('prevWork'),
-                frontCardImg: frontBase64,
-                backCardImg: backBase64,
                 date: new Date().toLocaleString('ar-IQ')
             };
 
@@ -1094,8 +987,6 @@
             submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> داخل کردن و سەیڤکردن`;
 
             form.reset();
-            const nameDisplays = form.querySelectorAll('.file-name-display');
-            nameDisplays.forEach(el => el.innerText = '');
 
             goHome();
             const alertEl = document.getElementById('successAlert');
@@ -1165,17 +1056,6 @@
                         <p><strong>بەش/قۆناغ:</strong> ${sub.majorOrGrade}</p>
                         <p><strong>نوێنەر:</strong> ${sub.isRepresentative} ${sub.repDepartment !== 'نییە' ? '(' + sub.repDepartment + ')' : ''}</p>
                         ${sub.teamMembers !== 'نییە' ? `<p><strong>تیمەکەی:</strong><br><small style="white-space: pre-line; color: #444;">${sub.teamMembers}</small></p>` : ''}
-                        
-                        <div class="card-img-preview">
-                            <div>
-                                <small>کارتی پێشەوە</small>
-                                <img src="${sub.frontCardImg}" alt="Front Card">
-                            </div>
-                            <div>
-                                <small>کارتی دواوە</small>
-                                <img src="${sub.backCardImg}" alt="Back Card">
-                            </div>
-                        </div>
                     </div>
                     <button class="delete-btn" onclick="deleteSubmission(${index})"><i class="fa-solid fa-trash"></i> سڕینەوەی ئەم فۆرمە</button>
                 `;
