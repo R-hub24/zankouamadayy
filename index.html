@@ -1025,7 +1025,6 @@
             const form = event.target;
             const submitBtn = form.querySelector('.submit-btn');
             
-            // Disable button and show loading state
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> خەریکی ناردن و سەیڤکردنە...`;
 
@@ -1043,6 +1042,7 @@
             const frontBase64 = frontFile ? await getBase64(frontFile) : '';
             const backBase64 = backFile ? await getBase64(backFile) : '';
 
+            // Data sent to Google Sheet (includes registeredBy)
             const submissionData = {
                 sector: sectorName,
                 registeredBy: formData.get('registeredBy'),
@@ -1063,14 +1063,33 @@
                 date: new Date().toLocaleString('ar-IQ')
             };
 
-            submissions.push(submissionData);
+            // Data saved locally as digital ID card (without registeredBy inside the ID card display)
+            const localData = {
+                sector: sectorName,
+                fullName: formData.get('fullName'),
+                phone: formData.get('phone'),
+                voterCardNumber: formData.get('voterCardNumber'),
+                voterStation: formData.get('voterStation'),
+                memberType: formData.get('memberType'),
+                teamMembers: formData.get('teamMembers') || 'نییە',
+                institution: formData.get('university') || formData.get('schoolName') || 'نییە',
+                majorOrGrade: formData.get('major') || formData.get('schoolGrade') || 'نییە',
+                isRepresentative: formData.get('isRepresentative'),
+                repDepartment: formData.get('repDepartment') || 'نییە',
+                city: formData.get('city'),
+                prevWork: formData.get('prevWork'),
+                frontCardImg: frontBase64,
+                backCardImg: backBase64,
+                date: new Date().toLocaleString('ar-IQ')
+            };
+
+            submissions.push(localData);
             localStorage.setItem('elevate_submissions_all', JSON.stringify(submissions));
             updateCounters();
 
             // Send to Google Sheet in background
             await sendDataToGoogleSheet(submissionData);
 
-            // Reset button state
             submitBtn.disabled = false;
             submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> داخل کردن و سەیڤکردن`;
 
@@ -1137,7 +1156,6 @@
                         <span style="font-size: 0.8rem; color: var(--gray);">${sub.date}</span>
                     </div>
                     <div class="id-body">
-                        <p><strong>تۆمارکەر:</strong> ${sub.registeredBy || 'نادیار'}</p>
                         <p><strong>ناوی سیانی:</strong> ${sub.fullName}</p>
                         <p><strong>تەلەفۆن:</strong> ${sub.phone}</p>
                         <p><strong>کارتی دەنگدان:</strong> ${sub.voterCardNumber}</p>
